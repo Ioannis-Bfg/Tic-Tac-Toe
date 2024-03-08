@@ -3,56 +3,35 @@ function createGameBoard(){
     return board;
 }
 
-function createPlayer(name,marker,board){
-    let user_name=name;
+function createPlayer(name,marker){
     let score=0;
     const getScore=()=>score;
     const addpoints=()=>++score;
-    const turn=function(row,column){
-        board[row][column]=marker;
-    }
-    return{user_name:name,getScore, addpoints ,turn};
+    return{name,getScore, addpoints,marker};
 }
 
-
-let gameBoard=createGameBoard();
-
-let mike = createPlayer('Mike','X',gameBoard);
-let nick=createPlayer('Nick','O',gameBoard);
-
-function play(player1,player2,gameBoard){
-    count=1;
+function playRound(player,gameBoard){
     let playGame=function (){
-        if(count%2==0){
-            let input1=prompt(`Enter your 1st move ${player1['user_name']}`,0,0);
-            let input2=prompt(`Enter your 2nd move ${player1['user_name']}`,0,0);
-            player2.turn(input1,input2);
-            count+=1;
-            console.log(count);
-            console.table(gameBoard);
-        } else{
-            let input1=prompt(`Enter your 1st move ${player2['user_name']}`,0,0);
-            let input2=prompt(`Enter your 2nd move ${player2['user_name']}`,0,0);
-            player1.turn(input1,input2);
-            count+=1;
-            console.log(count);
-            console.table(gameBoard);
-        }
+        let input1=prompt(`Enter your 1st move ${player['name']}`,0,0);
+        let input2=prompt(`Enter your 2nd move ${player['name']}`,0,0);
+        console.log(player["marker"]);
+        gameBoard[input1][input2]=player["marker"];
+        console.table(gameBoard);
     }
     return{playGame};
 }
 
+let gameBoard=createGameBoard();
+let mike = createPlayer('Mike','X');
+let nick=createPlayer('Nick','O');
+
+let player1_round=playRound(mike,gameBoard);
+let player2_round=playRound(nick,gameBoard);
 
 
-// nick.turn(0,1);
-// nick.turn(0,0);
-// nick.turn()
-// mike.turn(1,2);
+player1_round.playGame();
+player2_round.playGame();
 
-let Match=play(mike,nick,gameBoard);
-Match.playGame();
-Match.playGame();
-Match.playGame();
 
 
 
