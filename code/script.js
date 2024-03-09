@@ -1,5 +1,24 @@
 function createGameBoard(){
     const board=[['','',''],['','',''],['','','']];
+    return {board};
+}
+
+function createPlayer(name,marker){
+    let score=0;
+    const getScore=()=>score;
+    const addpoints=()=>++score;
+    return{name,getScore, addpoints,marker};
+}
+
+function playRound(player,gameBoard){
+    let playerRound=function (input1,input2){
+        gameBoard[input1][input2]=player["marker"];
+    }
+    return{playerRound};
+}
+
+
+function winCheck(board){
     const winc=function() {
         for (let i = 0; i < 3; i++) {
             if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][0] === board[i][2]) {
@@ -32,43 +51,97 @@ function createGameBoard(){
 
         return null;
     }
-    return {board,winc};
+    return{winc};
 }
 
-function createPlayer(name,marker){
-    let score=0;
-    const getScore=()=>score;
-    const addpoints=()=>++score;
-    return{name,getScore, addpoints,marker};
-}
 
-function playRound(player,gameBoard){
-    let playGame=function (){
-        let input1 = parseInt(prompt(`Enter your 1st move ${player['name']}`));
-        let input2 = parseInt(prompt(`Enter your 2nd move ${player['name']}`));
-        // console.log(player["marker"]);
-        gameBoard[input1][input2]=player["marker"];
-        // console.table(gameBoard);
+function updateGameDisplay() {
+    function gameDisplay(board) {
+        board.forEach((row, rowIndex) => {
+            row.forEach((box, colIndex) => {
+                if(box==='X' || box==='O'){
+                    let html_box=document.querySelector(`#box-${rowIndex}${colIndex}`)
+                    html_box.textContent=box;
+                }else{
+                    return 'no';
+                }
+                // console.log(`Box value: ${box}, Row index: ${rowIndex}, Column index: ${colIndex}`);
+            });
+        });
     }
-    return{playGame};
+
+    return {gameDisplay};
 }
 
 
-let gameBoard=createGameBoard();
-let mike = createPlayer('Mike','X');
-let nick=createPlayer('Nick','O');
-
-let player1_round=playRound(mike,gameBoard.board);
-let player2_round=playRound(nick,gameBoard.board);
 
 
-player1_round.playGame();
-player1_round.playGame();
-player1_round.playGame();
-// player2_round.playGame();
+function playGame(){
+    let gameBoardCreate=createGameBoard();
+    let gameBoard=gameBoardCreate.board;
+    let mike = createPlayer('Mike','X');
+    let nick=createPlayer('Nick','O');
+    const boxes = document.querySelectorAll('.box');
+    let gameDisplayF=updateGameDisplay();
+    let gameDisplay=gameDisplayF.gameDisplay;
+    let currentPlayer=mike;
 
 
-console.log(gameBoard.winc());
+
+    boxes.forEach(box => {
+        box.addEventListener('click', (event) => printBoxId(event, gameBoard));
+    });
+
+    
+    function printBoxId(event,board) {
+        const boxId = event.target.id;
+        console.log("Clicked box ID:", boxId);
+        let input1 = parseInt(boxId.charAt(4));
+        let input2 = parseInt(boxId.charAt(5));
+        let playerTurn=playRound(currentPlayer,gameBoard);
+        playerTurn.playerRound(input1,input2);
+        // console.table(board);
+        gameDisplay(board);
+        console.log(currentPlayer.name);
+        let check_object=winCheck(board);
+        let  check=check_object.winc();
+        if (check==null){
+            currentPlayer = (currentPlayer === mike) ? nick : mike;
+        } else{
+            console.log(`You won${check}`);
+        }
+    }
+}
+    // while(true){
+    //     player1_round.playerRound();
+    //     gameDisplay(gameBoard.board);
+    //     let check_object=winCheck(gameBoard.board);
+    //     let  check=check_object.winc();
+    //     if(check!==null){
+    //         console.log('player 1');
+    //         break
+    //     }
+    //     player2_round.playerRound();
+    //     gameDisplay(gameBoard.board);
+    //     check=check_object.winc();
+    //     if(check!==null){
+    //         console.log('player 2');
+    //         break;
+    //     }
+    // }
+
+
+
+
+
+
+
+playGame();
+
+
+// player2_round.playerRound();
+
+
 
 
 

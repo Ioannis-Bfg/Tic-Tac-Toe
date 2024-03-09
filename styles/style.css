@@ -1,0 +1,98 @@
+*{
+    padding: 0;
+    margin:0;
+    font-family: inherit;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap:4rem;
+    padding:2%;
+}
+#title{
+    font-family: 'Roboto';
+    font-size: 3rem;
+    font-weight: 900;
+}
+.grid {
+    background-color: rgb(255, 255, 255);
+    height:80vh;
+    aspect-ratio: 1/1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+
+.grid button{
+    background-color: transparent;
+}
+#box-00{
+    border:none;
+    border-bottom: 5px solid black;
+    border-right: 5px solid black;
+}
+
+#box-01{
+    border:none;
+    border-bottom: 5px solid black;
+    border-right: 5px solid black;
+    border-left: 5px solid black;
+}
+
+#box-02{
+    border:none;
+    border-bottom: 5px solid black;
+    border-left: 5px solid black;
+}
+
+#box-10{
+    border:none;
+    border-top: 5px solid black;
+    border-right: 5px solid black;
+    border-bottom: 5px solid black;
+}
+
+#box-11{
+    border:none;
+    border: 5px solid black;
+}
+
+#box-12{
+    border:none;
+    border-bottom: 5px solid black;
+    border-left: 5px solid black;
+    border-top: 5px solid black;
+}
+
+#box-20{
+    border:none;
+    border-top: 5px solid black;
+    border-right: 5px solid black;
+}
+
+#box-21{
+    border:none;
+    border-top: 5px solid black;
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+}
+
+#box-22{
+    border:none;
+    border-top: 5px solid black;
+    border-left: 5px solid black;
+}
+
+.box:hover {
+    background-color: aquamarine;
+    transition: background-color 0.3s ease;
+}
+
+.box{
+    font-family: 'Roboto';
+    font-size: 2rem;
+    font-weight: 900;
+}
