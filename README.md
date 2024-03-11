@@ -1,0 +1,1 @@
+This is a simple tic tac toe website that is made using factory functions , this was done in order for me to learn this new design pattern and implement it
