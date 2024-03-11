@@ -3,38 +3,39 @@ function createGameBoard(){
     return {board};
 }
 
-function createPlayer(name,marker){
-    let score=0;
-    const getScore=()=>score;
-    const addpoints=()=>score++;
-    return{name,getScore, addpoints,marker};
-}
+function createPlayer(name, marker) {
+    let score = 0;
+    const getScore = () => score;
+    const addPoints = () => score++;
 
-function playRound(player,gameBoard){
-    let playerRound=function (input1,input2){
-        gameBoard[input1][input2]=player["marker"];
-    }
-    return{playerRound};
-}
+    const playerRound = (input1, input2, gameBoard) => {
+        if(gameBoard[input1][input2]==''){
+            gameBoard[input1][input2] = marker;
+        } else{
+            return false;
+        }
+    };
 
+    return { name, getScore, addPoints, marker, playerRound };
+}
 
 function winCheck(board){
     const winc=function() {
         for (let i = 0; i < 3; i++) {
             if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][0] === board[i][2]) {
-                return `${board[i][0]} player Wins!`;
+                return 1;
             }
         }
         for (let j = 0; j < 3; j++) {
             if (board[0][j] !== '' && board[0][j] === board[1][j] && board[0][j] === board[2][j]) {
-                return `${board[0][j]} player Wins!`;
+                return 1;
             }
         }
         if (board[0][0] !== '' && board[0][0] === board[1][1] && board[0][0] === board[2][2]) {
-            return `${board[0][0]} player Wins!`;
+            return 1;
         }
         if (board[0][2] !== '' && board[0][2] === board[1][1] && board[0][2] === board[2][0]) {
-            return `${board[0][2]} player Wins!`;
+            return 1;
         }
         let tie = true;
         for (let i = 0; i < 3; i++) {
@@ -46,7 +47,7 @@ function winCheck(board){
             }
         }
         if (tie) {
-            return 'Draw!';
+            return -1;
         }
 
         return null;
@@ -59,76 +60,119 @@ function updateGameDisplay() {
     function gameDisplay(board) {
         board.forEach((row, rowIndex) => {
             row.forEach((box, colIndex) => {
-                if(box==='X' || box==='O'){
-                    let html_box=document.querySelector(`#box-${rowIndex}${colIndex}`)
-                    html_box.textContent=box;
-                }else{
-                    return 'no';
+                if (box === 'X' || box === 'O') {
+                    if(box==='X'){
+                        let html_box = document.querySelector(`#box-${rowIndex}${colIndex}`);
+                        html_box.textContent = box;
+                        html_box.style.color='rgb(224, 188, 89)';
+                    }else{
+                        let html_box = document.querySelector(`#box-${rowIndex}${colIndex}`);
+                        html_box.textContent = box;
+                        html_box.style.color='#4c8edf';
+                    }
+
+                } else {
+                    let html_box = document.querySelector(`#box-${rowIndex}${colIndex}`);
+                    html_box.textContent = '';
                 }
             });
         });
     }
 
-    return {gameDisplay};
+    return { gameDisplay };
+}
+
+
+function resetGame(board) {
+    board.forEach(row => {
+        row.fill('');
+    });
+}
+
+function printBoxId(event) {
+    const boxId = event.target.id;
+    let input1 = parseInt(boxId.charAt(4));
+    let input2 = parseInt(boxId.charAt(5));
+    return[input1,input2];
 }
 
 
 
-function playMatch(){
-    let gameBoardCreate=createGameBoard();
-    let gameBoard=gameBoardCreate.board;
-    let mike = createPlayer('Mike','X');
-    let nick=createPlayer('Nick','O');
-    let score2=nick.getScore();
-    let score1=mike.getScore();
+
+function playGame() {
+    let mike = createPlayer('Mike', 'X');
+    let nick = createPlayer('Nick', 'O');
+    let gameBoard = createGameBoard().board;
+    let gamed = updateGameDisplay();
+    let gameDisplay = gamed.gameDisplay;
+    gameDisplay(gameBoard); 
     const boxes = document.querySelectorAll('.box');
-    let gameDisplayF=updateGameDisplay();
-    let gameDisplay=gameDisplayF.gameDisplay;
-    let currentPlayer=mike;
-    let reset_btn=document.querySelector('#reset')
+    let currentPlayer = mike;
+    let score1=document.querySelector('#score1');
+    let score2=document.querySelector('#score2');
+    let reset_btn=document.querySelector('#reset');
+
+    score1.textContent=mike.getScore();
+    score2.textContent=nick.getScore();
 
 
-    boxes.forEach(box => {
-        box.addEventListener('click', (event) => printBoxId(event, gameBoard));
-    });
-    
-    function printBoxId(event,board) {
-        const boxId = event.target.id;
-        let input1 = parseInt(boxId.charAt(4));
-        let input2 = parseInt(boxId.charAt(5));
-        let playerTurn=playRound(currentPlayer,gameBoard);
-        playerTurn.playerRound(input1,input2);
-        gameDisplay(board);
-        let check_object=winCheck(board);
-        let  check=check_object.winc();
-
-        if (check==null){
+    function handleGame(event) {
+        let [input1, input2] = printBoxId(event);
+        let currentmove=currentPlayer.playerRound(input1, input2, gameBoard);
+        gameDisplay(gameBoard); 
+        let check = winCheck(gameBoard).winc();
+        console.log(check);
+        if (check == null && currentmove!==false) {
             currentPlayer = (currentPlayer === mike) ? nick : mike;
-        } else{
-            console.log(check);
-            currentPlayer.addpoints();
-            if (currentPlayer === mike) {
-                score1 = currentPlayer.getScore();
-            } else {
-                score2 = currentPlayer.getScore();
-            }
-            console.log(score1,score2);
-            trigger=1;
+        } else if(check==null && currentmove==false){
             return;
         }
+        else {
+            if(check==1){
+                currentPlayer.addPoints();
+                let score = currentPlayer.getScore();
+                console.log(mike.getScore(),nick.getScore());
+                score1.textContent=mike.getScore();
+                score2.textContent=nick.getScore();
+                setTimeout(() => {
+                    resetGame(gameBoard);
+                    gameDisplay(gameBoard); 
+                    alert(`${currentPlayer.marker} won ! Click Ok to reset the game`);
+                }, 100);
+            } else {
+                console.log(mike.getScore(),nick.getScore());
+                setTimeout(() => {
+                    resetGame(gameBoard);
+                    gameDisplay(gameBoard); 
+                    alert(`Draw! Click Ok to reset the game`);
+                }, 100);
+                setTimeout(() => {
+                }, 100);
+            }
+            } 
+        
     }
-}
-playMatch();
-let trigger=0;
-function playGame(){
-    playMatch();
-    if(trigger==1){
-        console.log(trigger);
-        playMatch();
-    } else{
-        console.log(trigger);
-        return;
-    }
+
+    boxes.forEach(box => {
+        box.addEventListener('click', handleGame);
+    });
+
+    document.addEventListener('click', function(event) {
+        if (event.target.textContent === 'OK' && trigger) {
+            resetGame(gameBoard);
+            gameDisplay(gameBoard);
+            trigger = false; 
+        }
+    });
+
+    reset_btn.addEventListener('click',()=>{
+        resetGame(gameBoard);
+        gameDisplay(gameBoard); 
+    })
 }
 
+
+
 playGame();
+
+
